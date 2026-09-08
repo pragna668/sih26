@@ -62,8 +62,21 @@ function Stat({name,value,meta,symbol}:{name:string,value:string,meta:string,sym
 function Login({onLogin}:{onLogin:(r:Role)=>void}){
   const [choice,setChoice]=useState<"select"|Role>("select"),[id,setId]=useState(""),[password,setPassword]=useState(""),[error,setError]=useState("");
   if(choice==="select") return <div className="login"><div className="hero"><div className="hero-inner"><div className="brandmark">✦</div><Badge tone="glass">SMART CAMPUS PLATFORM</Badge><h1>One College.<br/><span>One Intelligent Platform.</span></h1><p>Connect academics, attendance, campus operations and AI-powered insights in one digital experience.</p><div className="hero-stats"><b>4,820+<small>Students</small></b><b>91%<small>Placement rate</small></b><b>24/7<small>Campus intelligence</small></b></div></div></div><div className="login-panel"><div className="brand"><div className="brandmark">✦</div><b>Smart College Assistant<small>Your Intelligent Digital Campus</small></b></div><div className="eyebrow">WELCOME BACK</div><h2>How would you like to sign in?</h2><p>Choose your portal to continue.</p><div className="login-options"><button onClick={()=>setChoice("student")}><div className="option-icon">🎓</div><span><b>Student Login</b><small>Access personal academic and campus information.</small></span><strong>→</strong></button><button onClick={()=>setChoice("admin")}><div className="option-icon purple">🏫</div><span><b>Admin Login</b><small>Monitor students, faculty and college operations.</small></span><strong>→</strong></button></div><small className="secure">✓ Role-based access · Hackathon prototype</small></div></div>;
-  function submit(e:React.FormEvent){e.preventDefault();if(!id.trim()||!password.trim()){setError("Enter both fields to continue.");return;}onLogin(choice)}
-  return <div className="auth"><form className="authbox" onSubmit={submit}><button type="button" className="back" onClick={()=>setChoice("select")}>← Back</button><div className="brandmark small">✦</div><Badge tone={choice==="student"?"blue":"purple"}>{choice==="student"?"STUDENT PORTAL":"ADMIN PORTAL"}</Badge><h1>{choice==="student"?"Student Login":"Admin Login"}</h1><p>Prototype mode: any non-empty ID and password are accepted.</p><label>{choice==="student"?"Student Roll Number":"Admin ID"}<input autoFocus value={id} onChange={e=>{setId(e.target.value);setError("")}} placeholder={choice==="student"?"CSE2024001":"ADMIN001"}/></label><label>Password<input type="password" value={password} onChange={e=>{setPassword(e.target.value);setError("")}} placeholder="Enter password"/></label>{error&&<div className="error">{error}</div>}<button type="submit" className="primary full">Login <span>→</span></button></form></div>
+ function submit(e: React.FormEvent) {
+  e.preventDefault();
+
+  if (!id.trim() || !password.trim()) {
+    setError("Enter both fields to continue.");
+    return;
+  }
+
+  if (choice === "select") {
+    setError("Please select a role.");
+    return;
+  }
+
+  onLogin(choice);
+}
 }
 
 function Sidebar({role,page,setPage,logout}:any){const nav=role==="student"?studentNav:adminNav;return <aside><div className="sidebrand"><div className="brandmark">✦</div><div><b>Smart College</b><small>Intelligent Campus</small></div></div><div className="role">✓ {role==="student"?"Student Portal":"Admin Command Center"}</div><nav>{nav.map((x:string)=><button key={x} className={page===x?"active":""} onClick={()=>setPage(x)}><span className="navicon">{icons[x]||"•"}</span>{x}{x==="Notifications"&&<b className="navcount">4</b>}</button>)}</nav><div className="sidebottom"><span>● Live campus data</span><button onClick={logout}>↪ Sign out</button></div></aside>}
@@ -152,4 +165,4 @@ function App(){
 
 class ErrorBoundary extends React.Component<{children:React.ReactNode},{error:Error|null}>{state={error:null as Error|null};static getDerivedStateFromError(error:Error){return{error}};render(){if(this.state.error)return <div className="error-screen"><div className="error-card"><h1>Something went wrong</h1><p>{this.state.error.message}</p><button onClick={()=>location.reload()}>Reload application</button></div></div>;return this.props.children}}
 
-createRoot(document.getElementById("root")!).render(<ErrorBoundary><App/></ErrorBoundary>);
+createRoot(document.getElementById("root")!).render(<App />);<ErrorBoundary><App/></ErrorBoundary>
